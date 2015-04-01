@@ -1,0 +1,42 @@
+<resources>
+
+    <!--
+        Base application theme, dependent on API level. This theme is replaced
+        by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
+    -->
+    <style name="AppBaseTheme">
+        <!--
+            Theme customizations available in newer API levels can go in
+            res/values-vXX/styles.xml, while customizations related to
+            backward-compatibility can go here.
+        -->
+    </style>
+
+    <!-- Application theme. -->
+    <style name="AppTheme" parent="AppBaseTheme">
+        <!-- All customizations that are NOT specific to a particular API-level can go here. -->
+    </style>
+
+    <style name="ListView_style">
+        <item name="android:fadeScrollbars">true</item>
+        <item name="android:fadingEdge">none</item>
+        <item name="android:fadeEnabled">false</item>
+        <item name="android:fadingEdgeLength">@dimen/fix_0</item>
+        <item name="android:background">@null</item>
+        <item name="android:listSelector">@android:color/transparent</item>
+        <item name="android:scrollbars">none</item>
+    </style>
+    <style name="ImageStyle">
+        <item name="android:adjustViewBounds">true</item>
+        <item name="android:contentDescription">@string/contentDescript</item>
+    </style>
+    <style name="ImageStyle.CenterCrop">
+        <item name="android:scaleType">centerCrop</item>
+    </style>
+    <style name="ImageStyle.Center">
+        <item name="android:scaleType">center</item>
+    </style>
+    <style name="ImageStyle.CenterInside">
+        <item name="android:scaleType">centerInside</item>
+    </style>
+</resources>

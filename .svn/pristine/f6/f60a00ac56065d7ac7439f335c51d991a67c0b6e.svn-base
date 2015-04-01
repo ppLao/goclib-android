@@ -1,0 +1,107 @@
+package org.goclib.android.control;
+
+import org.goclib.android.inf.BaseSourceInf;
+import org.goclib.android.inf.TitleBarInf;
+import org.goclib.android.ui.TitleBar;
+
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+public class TitleBarContoller extends BaseController implements TitleBarInf {
+	private TitleBar mTitleBar=null;
+	public TitleBarContoller() {
+		// TODO Auto-generated constructor stub
+		super();
+	}
+	public TitleBarContoller(BaseSourceInf source){
+		super(source);
+	}
+	public TitleBarContoller(BaseSourceInf mSource,OnClickListener listener) {
+		// TODO Auto-generated constructor stub
+		super(mSource);
+	}
+	
+	@Override
+	public void setSource(BaseSourceInf mSource) {
+		// TODO Auto-generated method stub
+		if(mSource instanceof TitleBar)
+			this.mTitleBar = (TitleBar) mSource;
+		super.setSource(mSource);
+	}
+	@Override
+	protected void clearSourceEvent() {
+		// TODO Auto-generated method stub
+		super.clearSourceEvent();
+		if(getTitleBar()!=null){
+			getTitleBar().setOnClickListener(null);
+		}
+	}
+	@Override
+	protected void prepearSourceEvent() {
+		// TODO Auto-generated method stub
+		super.prepearSourceEvent();
+		if(getTitleBar()!=null){
+			//getTitleBar()
+		}
+	}
+	
+	public TitleBar getTitleBar(){
+		return mTitleBar;
+	}
+//	@Override
+	public ImageButton getLeftButton() {
+		// TODO Auto-generated method stub
+		return getTitleBar() == null ? null :getTitleBar().getLeftButton();
+	}
+//	@Override
+	public ImageButton getRightButton() {
+		// TODO Auto-generated method stub
+		return getTitleBar() == null ? null :getTitleBar().getRightButton();
+	}
+//	@Override
+	public View getTitle() {
+		// TODO Auto-generated method stub
+		return getTitleBar() == null ? null :getTitleBar().getTitle();
+	}
+//	@Override
+	public TextView getTitleAsTextView() {
+		// TODO Auto-generated method stub
+		return getTitleBar() == null ? null :getTitleBar().getTitleAsTextView();
+	}
+//	@Override
+	public ImageView getTitleAsImageView() {
+		// TODO Auto-generated method stub
+		return getTitleBar() == null ? null :getTitleBar().getTitleAsImageView();
+	}
+//	@Override
+	public void setRightButton(int resid) {
+		// TODO Auto-generated method stub
+		if(getTitleBar()!=null){
+			getTitleBar().setRightButton(resid);
+		}
+	}
+//	@Override
+	public void setTitleByResid(int resid) {
+		// TODO Auto-generated method stub
+		if(getTitleBar()!=null){
+			getTitleBar().setTitleByResid(resid);
+		}
+	}
+//	@Override
+	public void setTitleByString(String content) {
+		// TODO Auto-generated method stub
+		if(getTitleBar()!=null){
+			getTitleBar().setTitleByString(content);
+		}
+	}
+//	@Override
+	public void setLeftButton(int resid) {
+		// TODO Auto-generated method stub
+		if(getTitleBar()!=null){
+			getTitleBar().setLeftButton(resid);
+		}
+	}
+}

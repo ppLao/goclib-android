@@ -1,0 +1,23 @@
+<resources>
+
+    <string name="app_name">goclib_AND</string>
+
+    <string name="goclib_exit">退出</string>
+    <string name="goclib_confrim">确定</string>
+    <string name="goclib_click_again">再按一次</string>
+    <string name="goclib_download">下载</string>
+    <string name="goclib_wait">等待</string>
+    <string name="goclib_please">请</string>
+    <string name="goclib_please2">敬请</string>
+    <string name="goclib_refresh">刷新</string>
+    
+    <string name="goclib_err_network">未接入网络</string>
+    <string name="goclib_err_network_connect">网络连接错误</string>
+    <string name="goclib_err_network_timeout">网络连接超时</string>
+    <string name="contentDescript">image</string>
+    <string name="goclib_mimetype_html">text/html</string>
+    <string name="goclib_encoding_utf8">utf-8</string>
+    <string name="goclib_encoding_gbk">GBK</string>
+    <string name="goclib_encoding_gb2312">GB2312</string>
+    <string name="goclib_baseurl">http://www.ziiwoo.com/m</string>
+</resources>

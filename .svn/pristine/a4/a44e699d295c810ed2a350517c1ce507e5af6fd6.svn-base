@@ -1,0 +1,147 @@
+package org.goclib.android.ui;
+
+import org.goclib.android.R;
+import org.goclib.android.entity.GoclTitleBarButtonEntity;
+import org.goclib.android.utils.ConvertUtil;
+import org.goclib.android.utils.LogUtil;
+
+import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.util.AttributeSet;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+public class GoclTitleBarButton extends FrameLayout {
+	private TextView mTextView=null;
+	private ImageView mImage=null;
+	private View mLayout=null;
+	
+	public static enum VisibilityType{TextView,ImageView,AllGone,AllVisible};
+	
+	public GoclTitleBarButton(Context context, AttributeSet attrs, int defStyle) {
+		super(context, attrs, defStyle);
+		init(R.layout.ui_titlebar_button);
+		// TODO Auto-generated constructor stub
+	}
+	public GoclTitleBarButton(Context context, AttributeSet attrs) {
+		super(context, attrs);
+		init(R.layout.ui_titlebar_button);
+		// TODO Auto-generated constructor stub
+	}
+	public GoclTitleBarButton(Context context) {
+		super(context);
+		init(R.layout.ui_titlebar_button);
+		// TODO Auto-generated constructor stub
+	}
+	private void init(int resId) {
+		// TODO Auto-generated method stub
+		//mTextView=findViewById(id)
+		setClickable(true);
+		mLayout = LayoutInflater.from(getContext()).inflate(resId,this,true);
+		prepareUI();
+	}
+
+	private void prepareUI(){
+		setTextView((TextView) findViewById(R.id.goclib_button));
+		setImage((ImageView) findViewById(R.id.goclib_image_button));
+//		LayoutParams lp=new LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.MATCH_PARENT);
+//		lp.addRule(CENTER_IN_PARENT,TRUE);
+//		getTextView().setLayoutParams(lp);
+//		getImage().setLayoutParams(lp);
+	}
+	public TextView getTextView() {
+		return mTextView;
+	}
+	public void setTextView(TextView mTextView) {
+		this.mTextView = mTextView;
+	}
+	
+	public void setContent(GoclTitleBarButtonEntity entity){
+		//LogUtil.trace("name:"+entity.getName()+",reference:"+entity.getReference()+",text:"+entity.getText(),this);
+		if(entity == null
+				||entity.getReference()<=0 && entity.getText()==null){
+			//LogUtil.trace("name:"+entity.getName()+",reference:"+entity.getReference()+",text:"+entity.getText(),this);
+			visibilityContent(VisibilityType.AllGone);
+		}
+		else {
+			if(entity.getText()!=null){	
+				if(entity.getText().indexOf("drawable")>=0)
+					setContent(entity.getReference());
+				else
+					setContent(entity.getText());
+			}
+			else{
+				setContent(entity.getReference());
+			}
+			setTextColor(entity.getTextColor());
+			setTextSize(entity.getTextSize());
+			setEnabled(entity.getEnabled());
+		}
+	}
+	
+	public void setContent(String value){
+		//LogUtil.trace("<setcontent by string>"+value,this);
+		if(value != null){
+			getTextView().setText(value);
+			visibilityContent(VisibilityType.TextView);
+		}else{
+			visibilityContent(VisibilityType.AllGone);
+		}
+		//getImage().setVisibility(View.GONE);
+	}
+	public void setContent(int resId){
+		if(resId > 0){
+			getImage().setImageResource(resId);
+			visibilityContent(VisibilityType.ImageView);
+		}else{
+			visibilityContent(VisibilityType.AllGone);
+		}
+	}
+	public void setContent(){
+		visibilityContent(VisibilityType.AllGone);
+	}
+	
+	public void setTextSize(float size){
+		if(!isInEditMode())
+			getTextView().setTextSize(ConvertUtil.convertTextSize(size,getContext()));
+		else
+			getTextView().setTextSize(size);
+	}
+	public void setTextColor(ColorStateList colors){
+		getTextView().setTextColor(colors);
+	}
+	public void setTextColor(int color){
+		getTextView().setTextColor(color);
+	}
+	public void setTextColor(String color){
+		getTextView().setTextColor(Color.parseColor(color));
+	}
+	
+	public void visibilityContent(VisibilityType flag){
+		if(VisibilityType.ImageView == flag){
+			getImage().setVisibility(View.VISIBLE);
+			getTextView().setVisibility(View.GONE);
+		}else if(VisibilityType.TextView == flag){
+			getImage().setVisibility(View.GONE);
+			getTextView().setVisibility(View.VISIBLE);
+		}else if(VisibilityType.AllGone == flag){
+			getImage().setVisibility(View.GONE);
+			getTextView().setVisibility(View.GONE);
+		}else{
+			getImage().setVisibility(View.VISIBLE);
+			getTextView().setVisibility(View.VISIBLE);
+		}
+	}
+	
+	public ImageView getImage() {
+		return mImage;
+	}
+	public void setImage(ImageView mImage) {
+		this.mImage = mImage;
+	}
+}

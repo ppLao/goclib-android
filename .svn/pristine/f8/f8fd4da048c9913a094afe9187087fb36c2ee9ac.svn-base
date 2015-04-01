@@ -1,0 +1,153 @@
+package org.goclib.android.activity;
+
+import org.goclib.android.control.TitleBarContoller;
+import org.goclib.android.core.ActivityHelper;
+import org.goclib.android.inf.IActivity;
+import org.goclib.android.ui.TitleBar;
+
+import android.R;
+import android.app.Activity;
+import android.app.AlertDialog.Builder;
+import android.content.DialogInterface.OnClickListener;
+import android.os.Bundle;
+import android.os.Handler;
+import android.view.KeyEvent;
+import android.view.View;
+
+public abstract class GocBaseActivity extends Activity implements IActivity {
+	private TitleBar mTitleBar=null;
+	private TitleBarContoller mTitleBarContoller=null;
+	private ActivityHelper mHelper=null;
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		// TODO Auto-generated method stub
+		super.onCreate(savedInstanceState);
+		//setHandler(new Handler());
+		mHelper=new ActivityHelper(this);
+	}
+
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		init();
+	}
+	//@Override
+	public boolean init() {
+		// TODO Auto-generated method stub
+		boolean result=getHelper() == null ? false : getHelper().isInit();
+		if(!result){
+			getHelper().init();
+			//mTitleBar = findViewById(R.id.)
+		}
+		return result;
+	}
+	//@Override
+	public void setHandler(Handler value) {
+		// TODO Auto-generated method stub
+		if(!getHelper().isDestroy()){
+			getHelper().setHandler(value);
+		}
+	}
+	
+	//@Override
+	protected void onDestroy() {
+		// TODO Auto-generated method stub
+		super.onDestroy();
+		if(!getHelper().isDestroy()){
+			getHelper().destroy();
+			mHelper=null;
+		}
+	}
+	
+	//@Override
+	public Handler getHandler() {
+		// TODO Auto-generated method stub
+		return (getHelper().isDestroy())?null:getHelper().getHandler();
+	}
+
+	//@Override
+	public void displayProgressDialog(Boolean value) {
+		// TODO Auto-generated method stub
+		if(!getHelper().isDestroy())
+			getHelper().displayProgressDialog(value);
+	}
+
+	//@Override
+	public Builder displayAlertDialog(String msg) {
+		// TODO Auto-generated method stub
+		return (getHelper().isDestroy())?null:getHelper().displayAlertDialog(msg);
+	}
+
+	//@Override
+	public Builder displayAlertDialog(String msg, OnClickListener onClick) {
+		// TODO Auto-generated method stub
+		return (getHelper().isDestroy())?null:getHelper().displayAlertDialog(msg,onClick);
+	}
+
+	//@Override
+	public Builder displayAlertDialog(View v) {
+		// TODO Auto-generated method stub
+		return (getHelper().isDestroy())?null:getHelper().displayAlertDialog(v);
+	}
+
+	//@Override
+	public Builder displayAlertDialog(View v, int paddingTop, int paddingLeft,
+			int paddingBottom, int paddingRight) {
+		// TODO Auto-generated method stub
+		return (getHelper().isDestroy())?null:getHelper().displayAlertDialog(v,paddingTop,paddingLeft,paddingBottom,paddingRight);
+	}
+
+	//@Override
+	public int getScreenWidth() {
+		// TODO Auto-generated method stub
+		return (getHelper().isDestroy())?0:getHelper().getScreenWidth();
+	}
+
+	//@Override
+	public int getScreenHeight() {
+		// TODO Auto-generated method stub
+		return (getHelper().isDestroy())?0:getHelper().getScreenHeight();
+	}
+
+	//@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		// TODO Auto-generated method stub
+		if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN && getHelper().getBackKeyStatus()!=ActivityHelper.BACK_STATUS.DEFAULT) {
+			getHelper().onBackKeyClick();
+			return true;
+		}
+		return super.onKeyDown(keyCode, event);
+	}
+
+	public ActivityHelper getHelper() {
+		return mHelper;
+	}
+
+	public TitleBar getTitleBar() {
+		return mTitleBar;
+	}
+
+	public void setTitleBar(TitleBar mTitleBar) {
+		this.mTitleBar = mTitleBar;
+		if(getTitleBarContoller()!=null){
+			getTitleBarContoller().setSource(getTitleBar());
+		}
+	}
+	
+	public void setTitleBar(int resid){
+		setTitleBar((TitleBar) findViewById(resid));
+	}
+
+	public TitleBarContoller getTitleBarContoller() {
+		return mTitleBarContoller;
+	}
+
+	public void setTitleBarContoller(TitleBarContoller mTitleBarContoller) {
+		this.mTitleBarContoller = mTitleBarContoller;
+		if(getTitleBarContoller()!=null){
+			getTitleBarContoller().setSource(getTitleBar());
+		}
+	}
+
+}

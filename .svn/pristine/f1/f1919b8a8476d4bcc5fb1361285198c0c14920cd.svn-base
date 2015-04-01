@@ -1,0 +1,173 @@
+package org.goclib.android.utils;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.Bitmap.Config;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.PorterDuff.Mode;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
+import android.graphics.RectF;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+
+public final class ViewGroupUtil {
+	public static View[] findViews(String nameFix, int len, View[] container,
+			Activity context) {
+		if (container == null)
+			container = new View[len];
+		String[] names = new String[len];
+		for (int i = 0; i < len; i++) {
+			names[i] = nameFix + "i";
+		}
+		return findViews(names, container, context);
+	}
+
+	public static View[] findViews(String[] nameFix, View[] container,
+			Activity context) {
+		if (container == null)
+			container = new View[nameFix.length];
+		int[] _temp=new int[nameFix.length];
+		int len = container.length;
+		for (int i = 0; i < len; i++) {
+			int _id = ResourceUtil.getID(context, nameFix[i]);
+			_temp[i]=_id;
+		}
+		return findViews(_temp, container, context);
+	}
+	
+	public static View[] findViews(int[] resids,View[] container,Activity context){
+		if (container == null)
+			container = new View[resids.length];
+		int len = container.length;
+		for (int i = 0; i < len; i++) {
+			View _view = context.findViewById(resids[i]);
+			container[i] = _view;
+		}
+		return container;
+	}
+	public static List<View> findViews(int[] resids,Activity context){
+		return Arrays.asList(findViews(resids,null, context));
+	}
+	public static List<View> findViews(String[] nameFix,Activity context){
+		return Arrays.asList(findViews(nameFix,null, context));
+	}
+	
+	public static View[] findViews(String nameFix, int len, View[] container,ViewGroup context) {
+		if (container == null)
+			container = new View[len];
+		String[] names = new String[len];
+		for (int i = 0; i < len; i++) {
+			names[i] = nameFix + "i";
+		}
+		return findViews(names, container, context);
+	}
+	public static View[] findViews(String[] nameFix, View[] container,ViewGroup context) {
+		if (container == null)
+			container = new View[nameFix.length];
+		int[] _temp=new int[nameFix.length];
+		int len = container.length;
+		for (int i = 0; i < len; i++) {
+			int _id = ResourceUtil.getID(ApplicationUtils.defaultContext, nameFix[i]);
+			_temp[i]=_id;
+		}
+		return findViews(_temp, container, context);
+	}
+	public static View[] findViews(int[] resids,View[] container,ViewGroup context){
+		if (container == null)
+			container = new View[resids.length];
+		int len = container.length;
+		for (int i = 0; i < len; i++) {
+			View _view = context.findViewById(resids[i]);
+			container[i] = _view;
+		}
+		return container;
+	}
+	public static List<View> findViews(int[] resids,ViewGroup context){
+		return Arrays.asList(findViews(resids,null, context));
+	}
+	public static List<View> findViews(String[] nameFix,ViewGroup context){
+		return Arrays.asList(findViews(nameFix,null, context));
+	}
+	
+	public static <T> List<View> findViews(ViewGroup container,Class<T> cls){
+		List<View>_result=null;
+		int _len=container.getChildCount();
+		for(int i=0;i<_len;i++){
+			View _c = container.getChildAt(i);
+			boolean _b=cls == null ? true : _c.getClass() == cls ;
+			if(_b){
+				if(_result == null)
+					_result = new ArrayList<View>();
+				_result.add(_c);
+			}
+		}
+		return _result;
+	}
+
+	public static List<View>findViews(ViewGroup container){
+		return findViews(container, null);
+	}
+	
+	public static void setVisibility(View view, boolean visible, boolean isGone) {
+		if (view == null)
+			return;
+		view.setVisibility(visible ? View.VISIBLE : (isGone ? View.GONE
+				: View.INVISIBLE));
+	}
+
+	public static void setVisibility(View view, boolean visible) {
+		setVisibility(view, visible, true);
+	}
+	
+	public static boolean setText(View view,String string){
+		boolean _result=view instanceof TextView;
+		if(_result)
+			((TextView)view).setText(string);
+		return _result;
+	}
+	public static boolean setHint(View view,String string){
+		boolean _result=view instanceof TextView;
+		if(_result)
+			((TextView)view).setHint(string);
+		return _result;
+	}
+	
+	
+	public static Bitmap getRoundedCornerBitmap(Bitmap bitmap,float radius){
+		return getRoundedCornerBitmap(bitmap, radius, radius);
+	}
+	
+	public static Bitmap getRoundedCornerBitmap(Bitmap bitmap,float radiusX,float radiusY) { 
+	     
+        Bitmap output = Bitmap.createBitmap(bitmap.getWidth(),  
+            bitmap.getHeight(), Config.ARGB_8888);
+        //得到画布
+        Canvas canvas = new Canvas(output);
+        
+       //将画布的四角圆化
+        final int color = Color.RED;  
+        final Paint paint = new Paint();  
+        //得到与图像相同大小的区域  由构造的四个值决定区域的位置以及大小
+        final Rect rect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());  
+        final RectF rectF = new RectF(rect);  
+       
+        paint.setAntiAlias(true);  
+        canvas.drawARGB(0, 0, 0, 0);  
+        paint.setColor(color);  
+        //drawRoundRect的第2,3个参数一样则画的是正圆的一角，如果数值不同则是椭圆的一角
+        canvas.drawRoundRect(rectF, radiusX,radiusY, paint);  
+       
+        paint.setXfermode(new PorterDuffXfermode(Mode.SRC_IN));  
+        canvas.drawBitmap(bitmap, rect, rect, paint);  
+       
+        return output;  
+      } 
+}

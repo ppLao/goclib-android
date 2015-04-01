@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="h1">48sp</dimen>
+    <dimen name="h2">36sp</dimen>
+    <dimen name="h3">24sp</dimen>
+    <dimen name="h4">16sp</dimen>
+    <dimen name="h5">14sp</dimen>
+    <dimen name="h6">12sp</dimen>
+    <dimen name="h7">10sp</dimen>
+    <dimen name="h8">8sp</dimen>
+    <dimen name="h9">6sp</dimen>
+    
+    <dimen name="fix_0">0dp</dimen>
+    <dimen name="fix_1">1dp</dimen>
+    <dimen name="fix_2">2dp</dimen>
+    <dimen name="fix_3">2dp</dimen>
+    <dimen name="fix_4">2dp</dimen>
+    <dimen name="fix_5">5dp</dimen>
+    
+    <dimen name="goclib_gap_mini">5dp</dimen>
+    <dimen name="goclib_gap_mini_wide">8dp</dimen>
+    <dimen name="goclib_gap_small">10dp</dimen>
+    <dimen name="goclib_gap_small_wide">15dp</dimen>
+    <dimen name="goclib_gap_medium">20dp</dimen>
+    <dimen name="goclib_gap_medium_wide">25dp</dimen>
+    <dimen name="goclib_gap_big">30dp</dimen>
+    <dimen name="goclib_gap_big_wide">35dp</dimen>
+    <dimen name="goclib_gap_biggest">40dp</dimen>
+    <dimen name="goclib_gap_biggest_wide">50dp</dimen>
+    <dimen name="goclib_gap_large">60dp</dimen>
+    <dimen name="goclib_gap_large_wide">70dp</dimen>
+    <dimen name="goclib_gap_huge">80dp</dimen>
+</resources>

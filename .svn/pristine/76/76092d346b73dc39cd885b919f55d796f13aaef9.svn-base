@@ -1,0 +1,63 @@
+package org.goclib.android.utils;
+
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.os.Build;
+
+
+public class SaveUtil {
+
+	public static final String myPreferenceName = "myPreference";
+	
+	public static SharedPreferences mSharedPreferences;
+	public static void savePreference(Context context ,String key , String value ){
+		savePreference(context, key, value, Context.MODE_PRIVATE);
+	}
+	public static void savePreference(Context context ,String key , String value ,int mode){
+		SharedPreferences mSharedPreferences = context.getSharedPreferences(myPreferenceName, mode);
+		SharedPreferences.Editor editor = mSharedPreferences.edit();
+		editor.putString(key, value);
+		editor.commit();
+	}
+	
+	public static void savePreferenceMultiProcess(Context context ,String key , String value){
+		savePreference(context, key, value,Context.MODE_MULTI_PROCESS);
+	}
+	public static void savePreferenceModeWorldReadable(Context context ,String key , String value){
+		savePreference(context, key, value,Context.MODE_WORLD_READABLE);
+	}
+	
+	public static String getPreferenceMultiProcess(Context context ,String key ){
+		return getPreference(context, key, Context.MODE_MULTI_PROCESS);
+	}
+	public static String getPreference(Context context ,String key,String defValue){
+		return getPreference(context, key,Context.MODE_PRIVATE,defValue);
+	}
+	public static String getPreference(Context context ,String key ){
+		return getPreference(context, key, Context.MODE_PRIVATE,"");
+	}
+	public static String getPreference(Context context ,String key, int mode,String defValue){
+		SharedPreferences mSharedPreferences = context.getSharedPreferences(myPreferenceName, mode);
+		return mSharedPreferences.getString(key, defValue);
+	}
+	public static String getPreference(Context context ,String key, int mode){
+		return getPreference(context,key,mode,"");
+	}
+	
+	public static void savePreferenceBoolean(Context context , String key , Boolean value){
+		SharedPreferences mSharedPreferences = context.getSharedPreferences(myPreferenceName, Context.MODE_PRIVATE);
+		SharedPreferences.Editor editor = mSharedPreferences.edit();
+		editor.putBoolean(key, value);
+		editor.commit();
+	}
+	
+	public static Boolean getPreferenceBoolean(Context context ,String key ){
+		SharedPreferences mSharedPreferences = context.getSharedPreferences(myPreferenceName, Context.MODE_PRIVATE);
+		return mSharedPreferences.getBoolean(key, false);
+	}
+	
+	public static Boolean getPreferenceBoolean(Context context ,String key ,boolean defVal){
+		SharedPreferences mSharedPreferences = context.getSharedPreferences(myPreferenceName, Context.MODE_PRIVATE);
+		return mSharedPreferences.getBoolean(key, defVal);
+	}
+}

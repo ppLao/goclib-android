@@ -1,0 +1,20 @@
+package org.goclib.android.inf;
+
+import android.view.View;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+public interface TitleBarInf {
+	public ImageButton getLeftButton();
+	public ImageButton getRightButton();
+	public View getTitle();
+	public TextView getTitleAsTextView();
+	public ImageView getTitleAsImageView();
+	
+	public void setRightButton(int resid);
+	public void setTitleByResid(int resid);
+	public void setTitleByString(String content);
+	public void setLeftButton(int resid);
+	
+}

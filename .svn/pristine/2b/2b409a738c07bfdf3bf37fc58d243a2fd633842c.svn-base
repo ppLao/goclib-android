@@ -1,0 +1,169 @@
+package org.goclib.android.entity;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.os.Parcelable.Creator;
+
+public class GoclBaseEntity implements Parcelable {
+	public static final String ID = "id";
+	public static final String INDEX="index";
+	public static final String NAME="name";
+	public static final String PARENT_ID="parentId";
+	public static final String CONTENT="content";
+	private static final ArrayList<String> keys = new ArrayList<String>();
+	private Map<String,Object>attributes=new HashMap<String, Object>();
+	
+	public GoclBaseEntity(){
+		init();
+	}
+	
+	public GoclBaseEntity(Map<String,Object>attrs){
+		init(attrs);
+	}
+	
+	public GoclBaseEntity(int id){
+		init();
+		setId(id);
+	}
+	
+	public GoclBaseEntity(int id,String name){
+		init();
+		setId(id);
+		setName(name);
+	}
+	
+	public GoclBaseEntity(int id,String name,int parentid){
+		init();
+		setId(id);
+		setName(name);
+		setParentid(parentid);
+	}
+	
+	public GoclBaseEntity setValue(String key,Object value)throws IllegalArgumentException{
+		if(keys.indexOf(key) < 0)
+			throw new IllegalArgumentException("key not found:"+",key:"+key);
+		attributes.put(key, value);
+		return GoclBaseEntity.this;
+	}
+	public Object getValue(String key)throws IllegalArgumentException{
+		if(keys.indexOf(key) < 0)
+			throw new IllegalArgumentException();
+		return attributes.get(key);
+	}
+	
+	protected void init(){
+		init(new HashMap<String,Object>());
+	}
+	protected void init(Map<String,Object>attrs){
+		attributes = attrs;
+		keys.add(ID);
+		keys.add(NAME);
+		keys.add(PARENT_ID);
+		keys.add(INDEX);
+		keys.add(CONTENT);
+	}
+	protected boolean addKey(String key){
+		if(keys.indexOf(key)>=0)
+			return false;
+		keys.add(key);
+		return true;
+	}
+	protected void addKeys(String[] keys){
+		for(String s:keys)
+			addKey(s);
+	}
+
+	public Map<String,Object>getAttributes(){
+		return attributes;
+	}
+	
+	public String getName() {
+		return (String) getValue(NAME);
+	}
+
+	public GoclBaseEntity setName(String name) {
+		return setValue(NAME, name);
+	}
+
+	public int getId() {
+		return (Integer) getValue(ID) == null?-1:(Integer) getValue(ID);
+	}
+
+	public GoclBaseEntity setId(int id) {
+		return setId(Integer.valueOf(id));
+	}
+	public GoclBaseEntity setId(Integer id) {
+		return setValue(ID, id);
+	}
+	public int getIndex() {
+		return (Integer) getValue(INDEX) == null?-1:(Integer) getValue(INDEX);
+	}
+
+	public GoclBaseEntity setIndex(int index) {
+		return setIndex(Integer.valueOf(index));
+	}
+	public GoclBaseEntity setIndex(Integer index) {
+		return setValue(INDEX, index);
+	}
+
+	public int getParentid() {
+		return (Integer)getValue(PARENT_ID);
+	}
+
+	public GoclBaseEntity setParentid(int parentid) {
+		return setParentid(Integer.valueOf(parentid));
+	}
+	public GoclBaseEntity setParentid(Integer parentid) {
+		return setValue(PARENT_ID, parentid);
+	}
+	public <T>T getContent() {
+		return (T) getValue(CONTENT);
+	}
+	public GoclBaseEntity setContent(Object value) {
+		setValue(CONTENT, value);
+		return this;
+	}
+	
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return attributes.toString();
+	}
+	
+	public Map<String, Object>toMap(){
+		return new HashMap<String, Object>(attributes);
+	}
+	
+	public <T> T getParseData(){
+		return null;
+	}
+	
+	public static final Parcelable.Creator<GoclBaseEntity> CREATOR = new Creator<GoclBaseEntity>() {  
+        public GoclBaseEntity createFromParcel(Parcel source) {
+        	HashMap<String,Object> out = source.readHashMap(HashMap.class.getClassLoader());
+        	GoclBaseEntity info = new GoclBaseEntity(out);
+            return info;
+        } 
+        
+        public GoclBaseEntity[] newArray(int size) {  
+            return new GoclBaseEntity[size];  
+        }  
+    };  
+
+	@Override
+	public int describeContents() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void writeToParcel(Parcel dest, int flags) {
+		// TODO Auto-generated method stub
+		dest.writeMap(getAttributes());
+	}
+}

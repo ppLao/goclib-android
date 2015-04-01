@@ -1,0 +1,27 @@
+package org.goclib.android.events;
+
+import java.util.EventObject;
+
+public class BaseEvent {
+	public static final String ON_MEASURE_UI="goclib.onMeasureUI";
+	
+	
+	private Object mData=null;
+	private String mType=null;
+	public BaseEvent(String type,Object data){
+		setType(type);
+		setData(data);
+	}
+	public Object getData() {
+		return mData;
+	}
+	public void setData(Object mData) {
+		this.mData = mData;
+	}
+	public String getType() {
+		return mType;
+	}
+	public void setType(String mType) {
+		this.mType = mType;
+	}
+}

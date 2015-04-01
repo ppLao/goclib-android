@@ -1,0 +1,253 @@
+package org.goclib.android.ui;
+
+import org.goclib.android.R;
+import org.goclib.android.entity.GoclTitleBarButtonEntity;
+import org.goclib.android.events.BaseControllerEvent;
+import org.goclib.android.events.BaseEvent;
+import org.goclib.android.inf.BaseListenerInf;
+import org.goclib.android.inf.BaseSourceInf;
+
+import android.content.Context;
+import android.content.res.TypedArray;
+import android.util.AttributeSet;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.FrameLayout;
+
+public class TitleBar extends FrameLayout implements OnClickListener,BaseSourceInf {
+
+	private GoclTitleBarButtonEntity _rightEntity=null;
+	private GoclTitleBarButtonEntity _leftEntity=null;
+	private GoclTitleBarButtonEntity _titleEntity=null;
+	private int _layoutId=-1;
+	
+	private GoclTitleBarButton _leftCache=null;
+	private GoclTitleBarButton _centerCache=null;
+	private GoclTitleBarButton _rightCache=null;
+	
+	
+	private String mTitle="";
+	private int titleTextColor=0xfff;
+	private int titleTextSize=12;
+	private BaseListenerInf listener;
+	public int itemVisibilityDuration = 0;
+	
+	private boolean selectRight;
+	private boolean selectLeft;
+	private boolean selectTitle;
+	private boolean defaultGone=false;
+	protected Context mContext=null;
+	
+	public TitleBar(Context context, AttributeSet attrs, int defStyle) {
+		super(context, attrs, defStyle);
+		// TODO Auto-generated constructor stub
+		mContext=context;
+		prepareLayout(R.layout.ui_titlebar);
+		TypedArray ta = context.obtainStyledAttributes(attrs,R.styleable.TitleBar,defStyle,0);
+		prepare(ta);
+		if(isInEditMode())
+			onFinishInflate();
+	}
+	public TitleBar(Context context, AttributeSet attrs) {
+		super(context, attrs);
+		mContext=context;
+		prepareLayout(R.layout.ui_titlebar);
+		TypedArray ta = context.obtainStyledAttributes(attrs,R.styleable.TitleBar);
+		prepare(ta);
+		if(isInEditMode())
+			onFinishInflate();
+	}
+	
+	public void prepareLayout(int layoutId){
+		_layoutId=layoutId;
+		LayoutInflater.from(getContext()).inflate(layoutId, this,true);
+	}
+	
+	protected void prepare(TypedArray ta){
+		try{
+			_rightEntity=new GoclTitleBarButtonEntity();
+			_rightEntity
+				.setEnabled(ta.getBoolean(org.goclib.android.R.styleable.TitleBar_goclib_titlebar_right_enabled, true))
+				.setTextSize(ta.getDimension(org.goclib.android.R.styleable.TitleBar_goclib_titlebar_right_text_size, 16))
+				.setTextColor(ta.getColor(org.goclib.android.R.styleable.TitleBar_goclib_titlebar_right_text_color, 0xffffffff))
+				.setReference(ta.getResourceId(org.goclib.android.R.styleable.TitleBar_goclib_titlebar_right, -1))
+				.setText(ta.getString(org.goclib.android.R.styleable.TitleBar_goclib_titlebar_right))
+				.setParentid(_layoutId)
+				.setName("right button")
+				.setId(R.id.ui_topbar_right);
+			_leftEntity=new GoclTitleBarButtonEntity();
+			_leftEntity
+				.setEnabled(ta.getBoolean(org.goclib.android.R.styleable.TitleBar_goclib_titlebar_left_enabled, true))
+				.setTextSize(ta.getDimension(org.goclib.android.R.styleable.TitleBar_goclib_titlebar_left_text_size, 16.0f))
+				.setTextColor(ta.getColor(org.goclib.android.R.styleable.TitleBar_goclib_titlebar_left_text_color, 0xffffffff))
+				.setReference(ta.getResourceId(org.goclib.android.R.styleable.TitleBar_goclib_titlebar_left, -1))
+				.setText(ta.getString(org.goclib.android.R.styleable.TitleBar_goclib_titlebar_left))
+				.setParentid(_layoutId)
+				.setName("left button")
+				.setId(R.id.ui_topbar_left);
+			
+			_titleEntity=new GoclTitleBarButtonEntity();
+			_titleEntity
+			.setEnabled(ta.getBoolean(org.goclib.android.R.styleable.TitleBar_goclib_titlebar_title_enabled, true))
+				.setTextSize(ta.getDimension(org.goclib.android.R.styleable.TitleBar_goclib_titlebar_title_text_size, 18))
+				.setTextColor(ta.getColor(org.goclib.android.R.styleable.TitleBar_goclib_titlebar_title_text_color, 0xffffffff))
+				.setReference(ta.getResourceId(org.goclib.android.R.styleable.TitleBar_goclib_titlebar_title, -1))
+				.setText(ta.getString(org.goclib.android.R.styleable.TitleBar_goclib_titlebar_title))
+				.setParentid(_layoutId)
+				.setName("title")
+				.setId(R.id.ui_topbar_title);
+			
+			defaultGone=ta.getBoolean(R.styleable.TitleBar_goclib_titlebar_default_gone, false);
+			//getTitleAsTextView().setTextColor(titleTextColor);
+			//getTitleAsTextView().setTextSize(titleTextSize);
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally{
+			if(ta!=null)
+				ta.recycle();
+		}
+	}
+	@Override
+	protected void onFinishInflate() {
+		// TODO Auto-generated method stub
+		super.onFinishInflate();
+		setLeftButton();
+		setRightButton();
+		setTitleButton();
+		
+		bindListener();
+		
+	}
+	private void bindListener() {
+		// TODO Auto-generated method stub
+		getLeftButton().setOnClickListener(this);
+		getRightButton().setOnClickListener(this);
+		getCenterButton().setOnClickListener(this);
+		
+	}
+	public void setLeftButton(){
+		setLeftButton(_leftEntity);
+	}
+	public void setLeftButton(GoclTitleBarButtonEntity entity){
+		getLeftButton().setContent(entity);
+	}
+	public void setLeftButton(int resId){
+		getLeftButton().setContent(resId);
+	}
+	public void setLeftButton(String value){
+		getLeftButton().setContent(value);
+	}
+	public void setRightButton(){
+		setRightButton(_rightEntity);
+	}
+	public void setRightButton(GoclTitleBarButtonEntity entity){
+		getRightButton().setContent(entity);
+	}
+	public void setRightButton(int resId){
+		getRightButton().setContent(resId);
+	}
+	public void setRightButton(String value){
+		getRightButton().setContent(value);
+	}
+	
+	public void setTitleButton(){
+		setTitleButton(_titleEntity);
+	}
+	public void setTitleButton(GoclTitleBarButtonEntity entity){
+		getCenterButton().setContent(entity);
+	}
+	public void setTitleButton(int resId){
+		getCenterButton().setContent(resId);
+	}
+	public void setTitleButton(String value){
+		getCenterButton().setContent(value);
+	}
+	
+	public GoclTitleBarButton getLeftButton(){
+		if(_leftCache ==null)
+			_leftCache = (GoclTitleBarButton) findViewById(R.id.goclib_title_bar_left);
+		return _leftCache;
+	}
+	public GoclTitleBarButton getCenterButton(){
+		if(_centerCache ==null)
+			_centerCache = (GoclTitleBarButton) findViewById(R.id.goclib_title_bar_center);
+		return _centerCache;
+	}
+	public GoclTitleBarButton getRightButton(){
+		if(_rightCache ==null)
+			_rightCache = (GoclTitleBarButton) findViewById(R.id.goclib_title_bar_right);
+		return _rightCache;
+	}
+	
+	
+	public void onClick(View v) {
+		// TODO Auto-generated method stub
+		//LogUtil.trace(v.getId()+","+v,this);
+		if(v.getId() == R.id.goclib_title_bar_left){
+			setSelectLeft(!isSelectLeft());
+			if(listener!=null)
+				listener.onCall(new BaseEvent(BaseControllerEvent.ON_CALL_LEFT,isSelectLeft()));
+			//LogUtil.debug("on left click"+"<has listener>"+(listener != null));
+		}else if(v.getId()== R.id.goclib_title_bar_right){
+			setSelectRight(!isSelectRight());
+			if(listener!=null)
+				listener.onCall(new BaseEvent(BaseControllerEvent.ON_CALL_RIGHT,isSelectRight()));
+			//LogUtil.debug("on right click"+"<has listener>"+(listener != null));
+		}else{
+			setSelectTitle(!isSelectTitle());
+			if(listener!=null)
+				listener.onCall(new BaseEvent(BaseControllerEvent.ON_CALL_TITLE,isSelectTitle()));
+			//LogUtil.debug("on title click"+"<has listener>"+(listener != null));
+		}
+	}
+	public boolean isSelectRight() {
+		return getRightButton().isSelected();
+	}
+	public void setSelectRight(boolean selectRight) {
+		getRightButton().setSelected(selectRight);
+	}
+	public void setEnabledRight(boolean enabled){
+		getRightButton().setEnabled(enabled);
+	}
+	public boolean getEnabledRight(){
+		return getRightButton().isEnabled();
+	}
+	public boolean isSelectLeft() {
+		return getLeftButton().isSelected();
+	}
+
+	public void setSelectLeft(boolean selectLeft) {
+		getLeftButton().setSelected(selectLeft);
+	}
+	public void setEnabledLeft(boolean enabled){
+		getLeftButton().setEnabled(enabled);
+	}
+	public boolean getEnabledLeft(){
+		return getLeftButton().isEnabled();
+	}
+
+	public boolean isSelectTitle() {
+		return getCenterButton().isSelected();
+	}
+
+	public void setSelectTitle(boolean selectTitle) {
+		getCenterButton().setSelected(selectTitle);
+	}
+	public void setEnabledTitle(boolean enabled){
+		getCenterButton().setEnabled(enabled);
+	}
+	public boolean getEnabledTitle(){
+		return getCenterButton().isEnabled();
+	}
+	public void addListener(BaseListenerInf listener) {
+		// TODO Auto-generated method stub
+		this.listener=listener;
+	}
+	public void removeListener(BaseListenerInf listener) {
+		// TODO Auto-generated method stub
+		if(this.listener!=null&&this.listener.equals(listener))
+			this.listener=null;
+	}
+
+}

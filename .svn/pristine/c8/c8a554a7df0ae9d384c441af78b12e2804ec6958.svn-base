@@ -1,0 +1,215 @@
+package org.goclib.android.ui;
+
+import org.goclib.android.R;
+import org.goclib.android.events.BaseControllerEvent;
+import org.goclib.android.events.BaseEvent;
+import org.goclib.android.inf.BaseListenerInf;
+import org.goclib.android.inf.BaseSourceInf;
+import org.goclib.android.utils.ApplicationUtils;
+
+import android.content.Context;
+import android.content.res.TypedArray;
+import android.util.AttributeSet;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.FrameLayout;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+public class TitleBar extends FrameLayout implements OnClickListener,BaseSourceInf {
+
+	private int mLeft_res = -1;
+	private int mRight_res=-1;
+	private String mTitle="";
+	private int titleTextColor=0xfff;
+	private int titleTextSize=12;
+	private BaseListenerInf listener;
+	public int itemVisibilityDuration = 0;
+	
+	private boolean selectRight;
+	private boolean selectLeft;
+	private boolean selectTitle;
+	private boolean defaultGone=false;
+	
+	public TitleBar(Context context, AttributeSet attrs, int defStyle) {
+		super(context, attrs, defStyle);
+		// TODO Auto-generated constructor stub
+		LayoutInflater.from(context).inflate(R.layout.ui_topbar, this,true);
+		TypedArray ta = context.obtainStyledAttributes(attrs,R.styleable.TitleBar,defStyle,0);
+		prepare(ta);
+		if(!isInEditMode())
+			onFinishInflate();
+	}
+	public TitleBar(Context context, AttributeSet attrs) {
+		super(context, attrs);
+		LayoutInflater.from(context).inflate(R.layout.ui_topbar, this,true);
+		TypedArray ta = context.obtainStyledAttributes(attrs,R.styleable.TitleBar);
+		prepare(ta);
+		if(!isInEditMode())
+			onFinishInflate();
+	}
+	
+	protected void prepare(TypedArray ta){
+		try{
+			mLeft_res=ta.getResourceId(org.goclib.android.R.styleable.TitleBar_goclib_titlebar_left, -1);
+			mRight_res=ta.getResourceId(org.goclib.android.R.styleable.TitleBar_goclib_titlebar_right, -1);
+			mTitle=ta.getString(org.goclib.android.R.styleable.TitleBar_goclib_titlebar_title);
+			//LogUtil.trace(ta.getString(org.goclib.R.styleable.TitleBar_goclib_titlebar_title),this);
+			titleTextColor=ta.getColor(R.styleable.TitleBar_goclib_titlebar_title_text_color, 0xffffff);
+			titleTextSize=ta.getDimensionPixelOffset(R.styleable.TitleBar_goclib_titlebar_title_text_size, 16);
+			defaultGone=ta.getBoolean(R.styleable.TitleBar_goclib_titlebar_default_gone, false);
+			getTitleAsTextView().setTextColor(titleTextColor);
+			getTitleAsTextView().setTextSize(titleTextSize);
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally{
+			if(ta!=null)
+				ta.recycle();
+		}
+	}
+	@Override
+	protected void onFinishInflate() {
+		// TODO Auto-generated method stub
+		super.onFinishInflate();
+		setLeftButton(mLeft_res);
+		setRightButton(mRight_res);
+		setTitleByString(mTitle);
+	}
+	
+	public void setLeftButton(int resid){
+		mLeft_res = resid;
+		boolean al=mLeft_res >0;
+		//LogUtil.debug(getLeftButton(),this);
+		if(getLeftButton()!=null){
+			getLeftButton().setImageResource(resid);
+			refreshVisibility(al,getLeftButton());
+			getLeftButton().setOnClickListener(this);
+			if(listener!=null)
+				listener.onCall(new BaseEvent(BaseControllerEvent.ON_LEFT_CHANGE,resid));
+		}
+	}
+	public void setRightButton(int resid){
+		mRight_res = resid;
+		boolean al=resid>0;
+		if(getRightButton()!=null){
+			//LogUtil.trace(defaultGone,this);
+			if(al){
+				getRightButton().setImageResource(resid);
+				getRightButton().setOnClickListener(this);
+			}else{
+				getRightButton().setOnClickListener(null);
+			}
+			refreshVisibility(al,getRightButton());
+			if(listener!=null)
+				listener.onCall(new BaseEvent(BaseControllerEvent.ON_RIGHT_CHANGE,resid));
+		}
+		
+	}
+	public void setTitleByResid(int resid){
+		setTitleByString(ApplicationUtils.defaultContext.getString(resid));
+	}
+	public void setTitleByString(String content){
+		mTitle = content;
+		if(content == null || content.length() == 0){
+			refreshVisibility(true,getTitleAsImageView(),0,true);
+			refreshVisibility(false,getTitleAsTextView(),0,true);
+		}else{
+			refreshVisibility(false,getTitleAsImageView(),0,true);
+			refreshVisibility(true,getTitleAsTextView(),0,true);
+			getTitleAsTextView().setText(content);
+		}
+		if(listener!=null)
+			listener.onCall(new BaseEvent(BaseControllerEvent.ON_TITLE_CHANGE,content));
+	}
+	
+	private void refreshVisibility(Boolean al,View v,int duration,Boolean isGone){
+		if(v==null)
+			return;
+		if(duration > 0){
+			//ViewPropertyAnimator.animate(v).alpha(al?1.0f:0.0f).setDuration(duration);
+		}
+		else{
+			v.setVisibility(al?View.VISIBLE:(isGone?View.GONE:View.INVISIBLE));
+		}
+	}
+	
+	private void refreshVisibility(Boolean al, View v) {
+		// TODO Auto-generated method stub
+		refreshVisibility(al, v,itemVisibilityDuration,defaultGone);
+	}
+	public ImageButton getLeftButton(){
+		return (ImageButton) findViewById(R.id.ui_topbar_left);
+	}
+	public ImageButton getRightButton(){
+		return (ImageButton) findViewById(R.id.ui_topbar_right);
+	}
+	public View getTitle(){
+		if(mTitle == null || mTitle.length() == 0)
+			return findViewById(R.id.ui_topbar_title_image);
+		else
+			return findViewById(R.id.ui_topbar_title);
+	}
+	public TextView getTitleAsTextView(){
+		return (TextView) findViewById(R.id.ui_topbar_title);
+	}
+	public ImageView getTitleAsImageView(){
+		return (ImageView) findViewById(R.id.ui_topbar_title_image);
+	}
+	
+	
+	public void onClick(View v) {
+		// TODO Auto-generated method stub
+		if(v.getId() == R.id.ui_topbar_left){
+			setSelectLeft(!isSelectLeft());
+			if(listener!=null)
+				listener.onCall(new BaseEvent(BaseControllerEvent.ON_CALL_LEFT,isSelectLeft()));
+		}else if(v.getId()== R.id.ui_topbar_right){
+			setSelectRight(!isSelectRight());
+			if(listener!=null)
+				listener.onCall(new BaseEvent(BaseControllerEvent.ON_CALL_RIGHT,isSelectRight()));
+			//LogUtil.debug("on right click"+"<has listener>"+(listener != null));
+		}else{
+			//R.id.ui_topbar_title:
+			//R.id.ui_topbar_title_image:
+			setSelectTitle(!isSelectTitle());
+			if(listener!=null)
+				listener.onCall(new BaseEvent(BaseControllerEvent.ON_CALL_TITLE,isSelectTitle()));
+			//LogUtil.debug("on title click"+"<has listener>"+(listener != null));
+		}
+	}
+	public boolean isSelectRight() {
+		return selectRight;
+	}
+
+	public void setSelectRight(boolean selectRight) {
+		this.selectRight = selectRight;
+	}
+
+	public boolean isSelectLeft() {
+		return selectLeft;
+	}
+
+	public void setSelectLeft(boolean selectLeft) {
+		this.selectLeft = selectLeft;
+	}
+
+	public boolean isSelectTitle() {
+		return selectTitle;
+	}
+
+	public void setSelectTitle(boolean selectTitle) {
+		this.selectTitle = selectTitle;
+	}
+	public void addListener(BaseListenerInf listener) {
+		// TODO Auto-generated method stub
+		this.listener=listener;
+	}
+	public void removeListener(BaseListenerInf listener) {
+		// TODO Auto-generated method stub
+		if(this.listener!=null&&this.listener.equals(listener))
+			this.listener=null;
+	}
+
+}

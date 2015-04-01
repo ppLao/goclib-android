@@ -1,0 +1,55 @@
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+   	
+    android:orientation="vertical" >
+    <LinearLayout 
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        >
+        <ImageButton
+	        android:layout_width="@dimen/fix_0"
+	        android:layout_height="match_parent"
+	        android:layout_weight="1"
+	        style="@style/ImageStyle.CenterInside"
+	        android:layout_gravity="center_vertical|left"
+	        android:id="@+id/ui_topbar_left"
+	        android:background="@drawable/goclib_selector_f55000000_n00000000"
+	        ></ImageButton>
+		<ImageButton
+	        android:layout_width="wrap_content"
+	        android:layout_height="match_parent"
+	        android:layout_weight="4"
+	        style="@style/ImageStyle.CenterInside"
+	        android:layout_gravity="center_vertical"
+	        android:id="@+id/ui_topbar_title_image"
+	        android:background="@null"
+	        android:visibility="gone"
+	        ></ImageButton>
+		<Button 
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_weight="4"
+	        android:text="@string/app_name"
+	        android:textColor="#fff"
+	        android:gravity="center"
+	        android:layout_gravity="center"
+	        android:ellipsize="end"
+	        android:singleLine="true"
+	        android:id="@+id/ui_topbar_title"
+	        android:background="@null"
+	        android:visibility="visible" >
+	       </Button>
+		<ImageButton
+	        android:layout_width="@dimen/fix_0"
+	        android:layout_height="match_parent"
+	        android:layout_weight="1"
+	        style="@style/ImageStyle.CenterInside"
+	        android:layout_gravity="center_vertical|right"
+	        android:id="@+id/ui_topbar_right"
+	        android:background="@drawable/goclib_selector_f55000000_n00000000"
+	        ></ImageButton>
+    </LinearLayout>
+</merge>

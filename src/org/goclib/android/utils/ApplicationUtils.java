@@ -1,0 +1,467 @@
+package org.goclib.android.utils;
+
+import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.UUID;
+
+import org.goclib.android.core.BaseApplication;
+import org.goclib.android.utils.cons.AppConst;
+
+import android.app.Activity;
+import android.app.ActivityManager;
+import android.app.ActivityManager.RunningTaskInfo;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.res.Configuration;
+import android.graphics.Rect;
+import android.net.Uri;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.provider.Settings.Secure;
+import android.telephony.TelephonyManager;
+import android.text.TextUtils;
+import android.util.DisplayMetrics;
+import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
+
+public final class ApplicationUtils {
+	public static final int RESULT_TAKE_PHOTO_BY_CAMERA=9990;
+	public static final int RESULT_TAKE_PHOTO_BY_GALLERY=9991;
+	public static final int RESULT_TAKE_PHOTO_BY_GALLERY_CROP=9992;
+	
+	public static final String IMAGE_UNSPECIFIED = "image/*"; 
+	
+	public static Context defaultContext=null;
+	
+	public static String getPackageName(Context context){
+		return getDefaultContext(context).getPackageName();
+	}
+	
+	public static String getVersion(Context context){
+		PackageManager pm = getDefaultContext(context).getPackageManager();
+		PackageInfo pi;
+		try {
+			pi = pm.getPackageInfo(getPackageName(context), 0);
+			return pi.versionName;
+		} catch (NameNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return "unknow version";
+		}
+	}
+	public static int getVersionCode(Context context){
+		PackageManager pm = getDefaultContext(context).getPackageManager();
+		PackageInfo pi;
+		try {
+			pi = pm.getPackageInfo(getPackageName(context), 0);
+			return pi.versionCode;
+		} catch (NameNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return -1;
+		}
+	}
+	
+	/*
+	 * has sd card
+	 */
+	public static boolean hasStorageCard() {
+		if(Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)){
+    		return true;
+    	}else{
+    		return false;
+    	}
+	}
+	
+	/*
+	 * 
+	 */
+	public static Context getDefaultContext(Context context){
+		if(context == null)
+			return defaultContext;
+		else
+			return context;
+	}
+	public static Context getDefaultContext(){
+		return getDefaultContext(null);
+	}
+	
+	public static void initApplicationDirectory(String path ,String dir){
+		File temp = new File(path,dir);
+		if(!temp.exists()&&!temp.isDirectory())
+			temp.mkdir();
+	}
+	public static void initApplicationDirectory(String dir,Context context){
+		initApplicationDirectory(getApplicationDataPath(context), dir);
+	}
+	
+	public static void initApplicationDirectories(String path ,String dir){
+		File temp = new File(path,dir);
+		if(!temp.exists()&&!temp.isDirectory())
+			temp.mkdirs();
+	}
+	public static void initApplicationDirectories(String dir,Context context){
+		initApplicationDirectories(getExternalStorageDataPath(context), dir);
+	}
+	
+	public static boolean clearTempFolder(Context context){
+		return deleteFolder(new File(getApplicationTempDirectory(context)));
+	}
+	
+	public static String getApplicationTempDirectory(Context context){
+		initApplicationDirectories(AppConst.DIR_TEMP, context);
+		return getExternalStorageDataPath(context)+File.separator+AppConst.DIR_TEMP;
+	}
+	
+	public static String getExternalStorageDataPath(Context context){
+		return getRootPath()+getDataPath()+File.separator+getPackageName(context);
+	}
+	
+	public static String getDataPath(){
+		return File.separator+"Android"+File.separator+"data";
+	}
+	public static String getRootPath(){
+		return hasStorageCard()?Environment.getExternalStorageDirectory().getAbsolutePath():null;
+	}
+	public static String getApplicationDataPath(){
+		return getApplicationDataPath(null);
+	}
+	public static String getApplicationDataPath(Context context){
+		return "/data"+Environment.getDataDirectory().getAbsolutePath()+File.separator+getPackageName(context);
+	}
+	public static String getApplicationDBPath(Context context){
+		return getApplicationDataPath(context)+File.separator;
+	}
+	
+	
+	public static boolean deleteFolder(File file) {
+        if (file.exists()) { 
+            if (file.isFile()) { 
+                    file.delete(); 
+            } else if (file.isDirectory()) { 
+                    File files[] = file.listFiles(); 
+                    if (files != null) {
+                            for (int i = 0; i < files.length; i++) { 
+                                    deleteFolder(files[i]); 
+                            }
+                    }
+            }
+            boolean isSuccess = file.delete();
+            if (!isSuccess) {
+                    return false;
+            }
+	    }
+	    return true;
+	}
+	public static Intent takePhotoByCamera(String name,Context context){
+		return takePhotoByCamera(getApplicationTempDirectory(context), name);
+	}
+	
+	public static Intent takePhotoByCamera(String directory,String name){
+		Intent result =new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+		result.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(new File(directory,name)));
+		return result;
+	}
+	public static Intent takePhotoByPick(){
+		Intent result =new Intent(Intent.ACTION_PICK,null);
+		result.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, IMAGE_UNSPECIFIED);
+		return result;
+	}
+	
+	public static Intent takePhotoByCrop(Context context,Uri uri,int aspectx,int aspecty,Uri specialDataUri){
+		return takePhotoByCrop(context, uri, aspectx, aspecty,getDisplayWidth(context),(getDecorViewHeight(context)-getTitleBarHeight(context)),specialDataUri);
+	}
+	public static Intent takePhotoByCrop(Context context,Uri uri,int aspectx,int aspecty){
+		return takePhotoByCrop(context, uri, aspectx, aspecty,getDisplayWidth(context),(getDecorViewHeight(context)-getTitleBarHeight(context)),null);
+	}
+	public static Intent takePhotoByCrop(Context context,Uri uri,int aspectx,int aspecty,int outWidth,int outHeight,Uri specialDataUri){
+		Intent result=new Intent(Intent.ACTION_GET_CONTENT);
+		if(specialDataUri!=null)
+			result.setAction("com.android.camera.action.CROP");
+		result.setType(IMAGE_UNSPECIFIED);
+		PhotoExtra _extra=new PhotoExtra()
+			.setAspectX(aspectx)
+			.setAspectY(aspecty)
+			.setScale(true)
+			.setDataOutput(uri)
+			.setData(specialDataUri)
+			.setOutputX(outWidth)
+			.setOutputY(outHeight);
+		_extra.getCrop(result);
+		return result;
+	}
+	
+	public static Intent takePhotoByCrop(Context context,String fileName,int aspectx,int aspecty,int outWidth,int outHeight){
+		return takePhotoByCrop(context, fileName,aspectx,aspecty,outWidth,outHeight,null);
+	}
+	
+	public static Intent takePhotoByCrop(Context context,String fileName,int aspectx,int aspecty,int outWidth,int outHeight,Uri specialDataUri){
+		String path = getApplicationTempDirectory(context);
+		File file = new File(path,fileName);
+		//LogUtil.trace(file.exists());
+		if(file.exists())
+			file.delete();
+		return takePhotoByCrop(context, Uri.fromFile(file),aspectx,aspecty,outWidth,outHeight,specialDataUri);
+	}
+	
+	public static Activity convertToActivty(Context context){
+		Activity act = null;
+		try{
+			act = (Activity)context;
+		}catch(Exception error){
+			error.printStackTrace();
+			
+		}
+		return act;
+	}
+	public static Window getWindow(Context context){
+		Activity act=convertToActivty(context);
+		if(act!=null){
+			return act.getWindow();
+		}else{
+			return null;
+		}
+	}
+	public static WindowManager getWindowManager(Context context){
+		Activity act=convertToActivty(context);
+		if(act!=null){
+			return act.getWindowManager();
+		}else{
+			return null;
+		}
+	}
+	public static WindowManager getWindowManager(){
+		return getWindowManager(getDefaultContext(null));
+	}
+	
+	public static DisplayMetrics getDisplayMetrics(Context context){
+		DisplayMetrics result=new DisplayMetrics();
+		getWindowManager(context).getDefaultDisplay().getMetrics(result);
+		return result;
+	}
+//	public static float getDisplayScale(){
+//		scale=getResources().getDisplayMetrics().scaledDensity;
+//	}
+	public static int getDisplayWidth(Context context){
+		return getDisplayMetrics(context).widthPixels;
+	}
+	public static int getDisplayHeight(Context context){
+		return getDisplayMetrics(context).heightPixels;
+	}
+	public static int getDisplayDpi(Context context){
+		return getDisplayMetrics(context).densityDpi;
+	}
+	public static float getDisplayDensity(Context context){
+		return getDisplayMetrics(context).density;
+	}
+	public static int getScreenOrientation(Context context){
+		int o = context.getResources().getConfiguration().orientation;
+		return o;
+	}
+	public static boolean isLandscape(Context context){
+		return getScreenOrientation(context) == Configuration.ORIENTATION_LANDSCAPE;
+	}
+	
+	public static View getRootContentView(Context context){
+		return getWindow(context).findViewById(Window.ID_ANDROID_CONTENT);
+	}
+	private static Rect decorViewBoundCache=null;
+	public static Rect getDecorViewBound(Rect outRect,Context context,boolean cache){
+		if(cache && decorViewBoundCache!=null)
+			return decorViewBoundCache;
+		Rect result=outRect == null?new Rect():outRect;
+		getWindow(context).getDecorView().getWindowVisibleDisplayFrame(result);
+		decorViewBoundCache = new Rect(result);
+		return result;
+	}
+	public static Rect getDecorViewBound(Context context){
+		return getDecorViewBound(null, context, true);
+	}
+	public static int getDecorViewHeight(Context context){
+		return getDecorViewBound(context).height();
+	}
+	public static int getStatusBarHeight(Context context){
+		return getDecorViewBound(context).top;
+	}
+	public static int getTitleBarHeight(Context context){
+		return getDecorViewBound(context).height()-getRootContentView(context).getHeight();
+	}
+	public static float getDisplayAspectX(Context context){
+		return (float)getDisplayWidth(context)/(float)getDecorViewHeight(context);
+	}
+	public static float getDisplayAspectY(Context context){
+		return (float)getDecorViewHeight(context)/(float)getDisplayWidth(context);
+	}
+	
+	public static int getMaxMemory(){
+		int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
+		return maxMemory;
+	}
+	
+	public static boolean isTablet(Context context) {
+        return (context.getResources().getConfiguration().screenLayout
+                & Configuration.SCREENLAYOUT_SIZE_MASK)
+                >= Configuration.SCREENLAYOUT_SIZE_LARGE;
+	}
+	public static boolean isRunning(String packageName){
+		return isRunning(BaseApplication.getInstance(), packageName);
+	}
+	public static boolean isRunning(Context context,String packageName){
+		boolean result=false;
+	    ActivityManager am = (ActivityManager)context.getSystemService(Context.ACTIVITY_SERVICE);
+	    List<RunningTaskInfo> list = am.getRunningTasks(100);
+	    for (RunningTaskInfo info : list) {
+	        if (info.topActivity.getPackageName().equals(packageName) && info.baseActivity.getPackageName().equals(packageName)) {
+	        	result = true;
+	            //find it, break
+	            break;
+	        }
+	    }
+	    return result;
+	}
+	public static BaseApplication getBaseApplication(Context context){
+		BaseApplication _app=null;
+		if(context!=null){
+			if(context instanceof BaseApplication)
+				_app=(BaseApplication)context;
+			else if(context.getApplicationContext() instanceof BaseApplication)
+				_app=(BaseApplication) context.getApplicationContext();
+		}
+		return _app;
+	}
+	
+	protected static final String PREFS_FILE = "goclib_device_id.xml";    
+    protected static final String PREFS_DEVICE_ID = "goclib_device_id";  
+    protected static String uuid;  
+    static public String getUDID()  
+    {  
+        if( uuid ==null ) {  
+            synchronized (BaseApplication.getInstance()) {    
+                if( uuid == null) {    
+                    final SharedPreferences prefs = BaseApplication.getInstance().getSharedPreferences( PREFS_FILE, 0);    
+                    final String id = prefs.getString(PREFS_DEVICE_ID, null );    
+    
+                    if (id != null) {    
+                        // Use the ids previously computed and stored in the prefs file    
+                        uuid = id;    
+                    } else {    
+    
+                        final String androidId = Secure.getString(BaseApplication.getInstance().getContentResolver(), Secure.ANDROID_ID);
+                        try {    
+                            if (!"9774d56d682e549c".equals(androidId)) {    
+                                uuid = UUID.nameUUIDFromBytes(androidId.getBytes("utf8")).toString();    
+                            } else {    
+                                final String deviceId = ((TelephonyManager) BaseApplication.getInstance().getSystemService( Context.TELEPHONY_SERVICE )).getDeviceId();    
+                                uuid = deviceId!=null ? UUID.nameUUIDFromBytes(deviceId.getBytes("utf8")).toString() : UUID.randomUUID().toString();    
+                            }    
+                        } catch (UnsupportedEncodingException e) {    
+                            throw new RuntimeException(e);    
+                        }    
+    
+                        // Write the value out to the prefs file    
+                        prefs.edit().putString(PREFS_DEVICE_ID, uuid).commit();    
+                    }  
+                }    
+            }    
+        }  
+        return uuid;  
+    }  
+    
+    /**
+     * ????????????mac??????<br/>
+     * ????????????12???0
+     */
+    public static String getMacAddress(Context context) {
+        // ??????mac?????????
+        String macAddress = "000000000000";
+        try {
+            WifiManager wifiMgr = (WifiManager) context
+                    .getSystemService(Context.WIFI_SERVICE);
+            WifiInfo info = (null == wifiMgr ? null : wifiMgr
+                    .getConnectionInfo());
+            if (null != info) {
+                if (!TextUtils.isEmpty(info.getMacAddress()))
+                    macAddress = info.getMacAddress().replace(":", "");
+                else
+                    return macAddress;
+            }
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return macAddress;
+        }
+        return macAddress;
+    }
+    public static String getWifiAddress() {  
+        WifiManager wifiManager = (WifiManager) BaseApplication.getInstance().getSystemService(Context.WIFI_SERVICE);
+        if (!wifiManager.isWifiEnabled()) {  
+        	wifiManager.setWifiEnabled(true);    
+        }  
+        WifiInfo wifiInfo = wifiManager.getConnectionInfo();       
+        int ipAddress = wifiInfo.getIpAddress();  
+        LogUtil.trace("<wifi address>"+ipAddress);
+        String ip = intToIp(ipAddress); 
+        
+        return ip;
+    }     
+    private static String intToIp(int i) {       
+        return (i & 0xFF ) + "." +       
+	        ((i >> 8 ) & 0xFF) + "." +       
+	        ((i >> 16 ) & 0xFF) + "." +       
+	        ( i >> 24 & 0xFF) ;  
+     }   
+    public static String getLocalIpAddress(){  
+        try{  
+            for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();){  
+               NetworkInterface intf = en.nextElement();
+               for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements();){  
+                   InetAddress inetAddress = enumIpAddr.nextElement();
+                   if (!inetAddress.isLoopbackAddress()){
+                       return inetAddress.getHostAddress().toString();  
+                   }  
+               }  
+           }  
+        }  
+        catch (SocketException ex){  
+            LogUtil.trace("WifiPreference IpAddress", ex.toString());  
+        }  
+        return null;  
+    }  
+    public static String getIPAddress(){
+    	//LogUtil.trace("<ip address>"+getLocalIpAddress());
+    	return getLocalIpAddress()==null?getWifiAddress():getLocalIpAddress();
+    }
+    public static String getOSName(){
+    	return  android.os.Build.VERSION.CODENAME;
+    }
+    public static String getOSVer(){
+    	return  android.os.Build.VERSION.RELEASE;
+    }
+    public static String getMobileBrand(){
+    	return android.os.Build.BRAND;
+    }
+    public static String getMobileModel(){
+    	return android.os.Build.MODEL;
+    }
+    public static String getIMEI(){
+    	TelephonyManager telephonyManager = (TelephonyManager) (defaultContext == null?BaseApplication.getInstance():defaultContext).getSystemService(Context.TELEPHONY_SERVICE);
+        String imei = telephonyManager.getDeviceId();
+    	return imei;
+    }
+    public static String getPhoneNumber(){
+    	TelephonyManager telephonyManager = (TelephonyManager) (defaultContext == null?BaseApplication.getInstance():defaultContext).getSystemService(Context.TELEPHONY_SERVICE);
+    	return telephonyManager.getLine1Number();
+    }
+}

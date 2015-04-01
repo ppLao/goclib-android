@@ -1,0 +1,199 @@
+package org.goclib.android.activity;
+
+import org.goclib.android.control.TitleBarContoller;
+import org.goclib.android.core.ActivityHelper;
+import org.goclib.android.core.ActivityManager;
+import org.goclib.android.core.ActivityHelper.BACK_STATUS;
+import org.goclib.android.inf.IActivity;
+import org.goclib.android.ui.TitleBar;
+import org.goclib.android.utils.cons.AppConst;
+
+import android.app.AlertDialog.Builder;
+import android.content.DialogInterface.OnClickListener;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Parcelable;
+import android.support.v4.app.FragmentActivity;
+import android.view.KeyEvent;
+import android.view.View;
+
+public abstract class GocBaseFragmentActivity extends FragmentActivity
+		implements IActivity {
+	private TitleBar mTitleBar = null;
+	private TitleBarContoller mTitleBarContoller = null;
+	private ActivityHelper mHelper = null;
+	private Parcelable mData=null;
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		// TODO Auto-generated method stub
+		super.onCreate(savedInstanceState);
+		ActivityManager.getInstance(this).add(this);
+	}
+
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		init();
+	}
+
+	@Override
+	public boolean init() {
+		// TODO Auto-generated method stub
+		if (!isInit()) {
+			prepare();
+		}
+		mData = getIntent().getParcelableExtra(AppConst.BUNDLE_KEY_DATA);
+		return isInit();
+	}
+
+	public boolean isInit() {
+		return getHelper() == null ? false : getHelper().isInited();
+	}
+
+	protected void prepare() {
+		setTitleBarContoller(new TitleBarContoller());
+		if (isDestroy())
+			setHelper(new ActivityHelper(this));
+		getHelper().restore(this);
+	}
+
+	@Override
+	public void setHandler(Handler value) {
+		// TODO Auto-generated method stub
+		if (!isDestroy()) {
+			getHelper().setHandler(value);
+		}
+	}
+
+	@Override
+	protected void onDestroy() {
+		// TODO Auto-generated method stub
+		super.onDestroy();
+		if (!isDestroy()) {
+			getHelper().destroy();
+			setHelper(null);
+		}
+		ActivityManager.getInstance(this).remove(this);
+	}
+
+	@Override
+	public Handler getHandler() {
+		// TODO Auto-generated method stub
+		return isDestroy() ? null : getHelper().getHandler();
+	}
+
+	@Override
+	public void displayProgressDialog(Boolean value) {
+		// TODO Auto-generated method stub
+		if (!isDestroy())
+			getHelper().displayProgressDialog(value);
+	}
+
+	@Override
+	public Builder displayAlertDialog(String msg) {
+		// TODO Auto-generated method stub
+		return isDestroy() ? null : getHelper()
+				.displayAlertDialog(msg);
+	}
+
+	@Override
+	public Builder displayAlertDialog(String msg, OnClickListener onClick) {
+		// TODO Auto-generated method stub
+		return (getHelper().isDestroy()) ? null : getHelper()
+				.displayAlertDialog(msg, onClick);
+	}
+
+	@Override
+	public Builder displayAlertDialog(View v) {
+		// TODO Auto-generated method stub
+		return (isDestroy()) ? null : getHelper()
+				.displayAlertDialog(v);
+	}
+
+	@Override
+	public Builder displayAlertDialog(View v, int paddingTop, int paddingLeft,
+			int paddingBottom, int paddingRight) {
+		// TODO Auto-generated method stub
+		return (isDestroy()) ? null : getHelper()
+				.displayAlertDialog(v, paddingTop, paddingLeft, paddingBottom,
+						paddingRight);
+	}
+
+	@Override
+	public int getScreenWidth() {
+		// TODO Auto-generated method stub
+		return (isDestroy()) ? 0 : getHelper().getScreenWidth();
+	}
+
+	@Override
+	public int getScreenHeight() {
+		// TODO Auto-generated method stub
+		return (isDestroy()) ? 0 : getHelper().getScreenHeight();
+	}
+
+	// @Override
+		public boolean onKeyDown(int keyCode, KeyEvent event) {
+			// TODO Auto-generated method stub
+			boolean _flag = false;
+			if (keyCode == KeyEvent.KEYCODE_BACK
+					&& event.getAction() == KeyEvent.ACTION_DOWN) {
+				if(onReturn(getHelper().getBackKeyStatus()))
+					return true;
+			}
+			return super.onKeyDown(keyCode, event);
+		}
+
+		@Override
+		public boolean onReturn(BACK_STATUS backStatus) {
+			// TODO Auto-generated method stub
+			boolean flag= backStatus != BACK_STATUS.DEFAULT;
+			if (flag)
+				getHelper().onBackKeyClick();
+			return flag;
+		}
+
+	public ActivityHelper getHelper() {
+		return mHelper;
+	}
+
+	public TitleBar getTitleBar() {
+		return mTitleBar;
+	}
+
+	public void setTitleBar(TitleBar mTitleBar) {
+		this.mTitleBar = mTitleBar;
+		if (getTitleBarContoller() != null) {
+			getTitleBarContoller().setSource(getTitleBar());
+		}
+	}
+
+	public void setTitleBar(int resid) {
+		setTitleBar((TitleBar) findViewById(resid));
+	}
+
+	public TitleBarContoller getTitleBarContoller() {
+		return mTitleBarContoller;
+	}
+
+	public void setTitleBarContoller(TitleBarContoller mTitleBarContoller) {
+		this.mTitleBarContoller = mTitleBarContoller;
+		if (getTitleBarContoller() != null) {
+			getTitleBarContoller().setSource(getTitleBar());
+		}
+	}
+
+	public void setHelper(ActivityHelper mHelper) {
+		this.mHelper = mHelper;
+	}
+	@Override
+	public Parcelable getData() {
+		// TODO Auto-generated method stub
+		return mData;
+	}
+	
+	public boolean isDestroy(){
+		return getHelper() == null||getHelper().isDestroy();
+	}
+}

@@ -1,0 +1,28 @@
+package org.goclib.android.inf;
+
+import org.goclib.android.core.ActivityHelper;
+
+import android.app.AlertDialog;
+import android.content.DialogInterface.OnClickListener;
+import android.os.Handler;
+import android.view.View;
+
+public interface IActivity {
+	public void setHandler(Handler value);
+	public Handler getHandler();
+	public void displayProgressDialog(Boolean value);
+	public AlertDialog.Builder displayAlertDialog(String msg);
+	public AlertDialog.Builder displayAlertDialog(String msg,OnClickListener onClick);
+	public AlertDialog.Builder displayAlertDialog(View v);
+	public AlertDialog.Builder displayAlertDialog(View v ,int paddingTop,int paddingLeft,int paddingBottom,int paddingRight);
+	
+	public int getScreenWidth();
+	public int getScreenHeight();
+	public void finish();
+	public void toHome();
+	
+	public boolean init();
+	public ActivityHelper getHelper();
+	
+	public boolean onReturn(ActivityHelper.BACK_STATUS backStatus,boolean flag);
+}

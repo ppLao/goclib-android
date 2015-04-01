@@ -1,0 +1,124 @@
+package org.goclib.android.core;
+
+import org.goclib.android.R;
+import org.goclib.android.ui.SimpleProcessDialog;
+import org.goclib.android.utils.ApplicationUtils;
+import org.goclib.android.utils.LogUtil;
+
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
+import android.app.Application;
+import android.app.Dialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
+import android.view.View;
+
+public class ActivityHelper extends ContextHelper {
+	private boolean mDialogCancelable=false;
+	private BACK_STATUS mBackKeyStatus=BACK_STATUS.DEFAULT;
+	public enum BACK_STATUS{NONE,DEFAULT,NORMAL,ALERT,AGAIN,WEBVIEW};
+	protected Dialog mLoading;
+	public ActivityHelper(Context context){
+		//restore(context);
+		super(context);
+	}
+	public int getScreenWidth() {
+		// TODO Auto-generated method stub
+		return ApplicationUtils.getDisplayWidth(getContext());
+	}
+	
+	public int getScreenHeight() {
+		// TODO Auto-generated method stub
+		return ApplicationUtils.getDisplayHeight(getContext());
+	}
+	
+	public void displayProgressDialog(Boolean value) {
+		// TODO Auto-generated method stub
+		if(value)
+			mLoading = SimpleProcessDialog.show(getContext());
+		else
+			if(mLoading!=null)
+				mLoading.dismiss();
+		
+	}
+	
+	public AlertDialog.Builder displayAlertDialog(String msg) {
+		// TODO Auto-generated method stub
+		return displayAlertDialog(msg, null);
+	}
+
+	public AlertDialog.Builder displayAlertDialog(String msg, OnClickListener onClick) {
+		// TODO Auto-generated method stub
+		AlertDialog.Builder myDialog =new AlertDialog.Builder(getContext()).setMessage(msg)
+			.setNeutralButton(getContext().getString(R.string.goclib_confrim), onClick);
+		myDialog.setCancelable(getDialogCancelable());
+		myDialog.create().show();
+		return myDialog;
+	}
+
+	public Builder displayAlertDialog(View v) {
+		// TODO Auto-generated method stub
+		AlertDialog.Builder myDialog = new AlertDialog.Builder(getContext());
+		myDialog.setView(v);
+		
+		return myDialog; 
+	}
+	
+	public Builder displayAlertDialog(View v, int paddingTop, int paddingLeft,
+			int paddingBottom, int paddingRight) {
+		// TODO Auto-generated method stub
+		AlertDialog.Builder myDialog = new AlertDialog.Builder(getContext());
+		myDialog.setView(v);
+		return myDialog;
+	}
+	public boolean getDialogCancelable() {
+		return mDialogCancelable;
+	}
+
+	public void setDialogCancelable(boolean mDialogCancelable) {
+		this.mDialogCancelable = mDialogCancelable;
+	}
+	
+	public BACK_STATUS getBackKeyStatus() {
+		return mBackKeyStatus;
+	}
+	
+	public boolean onBackKeyClick(){
+		boolean _result=false;
+		final BaseApplication _app=(BaseApplication) (ApplicationUtils.defaultContext==null?BaseApplication.getInstance():ApplicationUtils.defaultContext);
+		if(getBackKeyStatus() == BACK_STATUS.AGAIN){
+			_app.exitDelay(BaseApplication.getInstance());
+			_result=true;
+		}
+		else if(getBackKeyStatus() == BACK_STATUS.ALERT){
+			displayAlertDialog(getContext().getResources().getString(R.string.goclib_confrim)+getContext().getResources().getString(R.string.goclib_exit)+"?", new OnClickListener() {
+				
+				public void onClick(DialogInterface dialog, int which) {
+					// TODO Auto-generated method stub
+					_app.exit(_app);
+				}
+			});
+			_result=true;
+		}else if(getBackKeyStatus() ==  BACK_STATUS.NORMAL){
+			try{
+				((Activity)getContext()).onBackPressed();
+			}catch(Exception err){err.printStackTrace();};
+			_result=true;
+		}
+		return _result;
+	}
+	
+	public void setBackKeyStatus(BACK_STATUS mBackKeyStatus) {
+		this.mBackKeyStatus = mBackKeyStatus;
+	}
+	public Activity getActivity(){
+		return getContext() instanceof Activity ? (Activity)getContext() : null;
+	}
+	
+	public View findViewById(int resId){
+		return getActivity() == null?null:getActivity().findViewById(resId);
+	}
+	
+}

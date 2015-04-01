@@ -1,0 +1,26 @@
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content" >
+
+        <ImageView
+            android:id="@+id/goclib_image_button"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            style="@style/GoclibTitleBar.ImageButton"
+            android:src="@drawable/ic_launcher" >
+        </ImageView>
+
+        <TextView
+            android:id="@+id/goclib_button"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="text button"
+            style="@style/GoclibTitleBar.Button"
+            android:visibility="gone" >
+        </TextView>
+		
+</merge>

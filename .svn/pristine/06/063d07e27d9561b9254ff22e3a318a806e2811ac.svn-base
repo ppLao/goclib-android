@@ -1,0 +1,157 @@
+package org.goclib.android.core;
+
+import org.goclib.android.R;
+import org.goclib.android.ui.SimpleProcessDialog;
+import org.goclib.android.utils.ApplicationUtils;
+
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
+import android.app.Dialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
+import android.os.Handler;
+import android.view.View;
+
+public class ActivityHelper {
+	private Context mContext;
+	private Handler mHandler;
+	private boolean mDialogCancelable=false;
+	private BACK_STATUS mBackKeyStatus=BACK_STATUS.DEFAULT;
+	public enum BACK_STATUS{NONE,DEFAULT,NORMAL,ALERT,AGAIN};
+	private boolean mInit=false;
+	protected Dialog mLoading;
+	public ActivityHelper(Context context){
+		//restore(context);
+		setContext(context);
+		setHandler(new Handler());
+	}
+	
+	public void restore(Context context){
+		if(mDestroy){
+			mDestroy=false;
+			setContext(context);
+			setHandler(new Handler());
+		}
+		init();
+	}
+	
+	public void init(){
+		if(!mInit){
+			mInit=true;
+		}
+	}
+	
+	public int getScreenWidth() {
+		// TODO Auto-generated method stub
+		return ApplicationUtils.getDisplayWidth(getContext());
+	}
+	
+	public int getScreenHeight() {
+		// TODO Auto-generated method stub
+		return ApplicationUtils.getDisplayHeight(getContext());
+	}
+	
+	public void displayProgressDialog(Boolean value) {
+		// TODO Auto-generated method stub
+		if(value)
+			mLoading = SimpleProcessDialog.show(mContext);
+		else
+			if(mLoading!=null)
+				mLoading.dismiss();
+		
+	}
+	
+	public AlertDialog.Builder displayAlertDialog(String msg) {
+		// TODO Auto-generated method stub
+		return displayAlertDialog(msg, null);
+	}
+
+	public AlertDialog.Builder displayAlertDialog(String msg, OnClickListener onClick) {
+		// TODO Auto-generated method stub
+		AlertDialog.Builder myDialog =new AlertDialog.Builder(getContext()).setMessage(msg)
+			.setNeutralButton(getContext().getString(R.string.goclib_confrim), onClick);
+		myDialog.setCancelable(getDialogCancelable());
+		myDialog.create().show();
+		return myDialog;
+	}
+
+	public Builder displayAlertDialog(View v) {
+		// TODO Auto-generated method stub
+		AlertDialog.Builder myDialog = new AlertDialog.Builder(getContext());
+		myDialog.setView(v);
+		return myDialog; 
+	}
+	
+	public Builder displayAlertDialog(View v, int paddingTop, int paddingLeft,
+			int paddingBottom, int paddingRight) {
+		// TODO Auto-generated method stub
+		AlertDialog.Builder myDialog = new AlertDialog.Builder(getContext());
+		myDialog.setView(v);
+		return myDialog;
+	}
+	
+	public Handler getHandler() {
+		return mHandler;
+	}
+
+	public void setHandler(Handler mHandler) {
+		this.mHandler = mHandler;
+	}
+
+	public boolean getDialogCancelable() {
+		return mDialogCancelable;
+	}
+
+	public void setDialogCancelable(boolean mDialogCancelable) {
+		this.mDialogCancelable = mDialogCancelable;
+	}
+	
+	public BACK_STATUS getBackKeyStatus() {
+		return mBackKeyStatus;
+	}
+	
+	public void onBackKeyClick(){
+		if(getBackKeyStatus() == BACK_STATUS.AGAIN){
+			BaseApplication.getInstance().exitDelay(BaseApplication.getInstance());
+		}
+		else if(getBackKeyStatus() == BACK_STATUS.ALERT){
+			displayAlertDialog(getContext().getResources().getString(R.string.goclib_confrim)+getContext().getResources().getString(R.string.goclib_exit)+"?", new OnClickListener() {
+				
+				public void onClick(DialogInterface dialog, int which) {
+					// TODO Auto-generated method stub
+					BaseApplication.getInstance().exit(BaseApplication.getInstance());
+				}
+			});
+		}else if(getBackKeyStatus() ==  BACK_STATUS.NORMAL){
+			try{
+				((Activity)getContext()).onBackPressed();
+			}catch(Exception err){err.printStackTrace();};
+		}
+	}
+	
+	public void setBackKeyStatus(BACK_STATUS mBackKeyStatus) {
+		this.mBackKeyStatus = mBackKeyStatus;
+	}
+
+	public Context getContext() {
+		return mContext == null ? ApplicationUtils.getDefaultContext():mContext;
+	}
+
+	public void setContext(Context mContext) {
+		this.mContext = mContext;
+	}
+	
+	private boolean mDestroy=false;
+	public boolean isDestroy(){
+		return mDestroy;
+	}
+	public void destroy(){
+		setContext(null);
+		setHandler(null);
+	}
+	public boolean isInit(){
+		return mInit;
+	}
+}

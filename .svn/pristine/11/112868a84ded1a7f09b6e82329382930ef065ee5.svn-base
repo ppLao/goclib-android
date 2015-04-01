@@ -1,0 +1,29 @@
+package org.goclib.android.utils;
+
+import android.graphics.Bitmap;
+import android.webkit.HttpAuthHandler;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
+
+public class GoclSimpleWebViewClient extends WebViewClient {
+	@Override
+	public void onReceivedHttpAuthRequest(WebView view,
+			HttpAuthHandler handler, String host, String realm) {
+		super.onReceivedHttpAuthRequest(view, handler, host, realm);
+	}
+	@Override
+	public boolean shouldOverrideUrlLoading(WebView view, String url) {
+		view.loadUrl(url);
+		return super.shouldOverrideUrlLoading(view, url);
+	}
+
+	@Override
+	public void onPageStarted(WebView view, String url, Bitmap favicon) {
+		super.onPageStarted(view, url, favicon);
+	}
+
+	@Override
+	public void onPageFinished(WebView view, String url) {
+		super.onPageFinished(view, url);
+	}
+}

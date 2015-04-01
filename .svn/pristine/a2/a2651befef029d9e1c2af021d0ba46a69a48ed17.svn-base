@@ -1,0 +1,27 @@
+package org.goclib.android.inf;
+
+import org.goclib.android.entity.GoclTitleBarButtonEntity;
+import org.goclib.android.ui.GoclTitleBarButton;
+
+import android.view.View;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+public interface TitleBarInf {
+	public GoclTitleBarButton getLeftButton();
+	public GoclTitleBarButton getRightButton();
+	public GoclTitleBarButton getTitle();
+	
+	public void setRightButton(int resId);
+	public void setRightButton(String value);
+	public void setRightButton(GoclTitleBarButtonEntity entity);
+	
+	public void setTitleButton(int resId);
+	public void setTitleButton(String value);
+	public void setTitleButton(GoclTitleBarButtonEntity entity);
+	
+	public void setLeftButton(int resId);
+	public void setLeftButton(String value);
+	public void setLeftButton(GoclTitleBarButtonEntity entity);
+}

@@ -1,0 +1,40 @@
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" >
+    <RelativeLayout 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        >
+        <org.goclib.android.ui.GoclTitleBarButton
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:id="@+id/goclib_title_bar_left"
+            android:layout_centerVertical="true"
+            ></org.goclib.android.ui.GoclTitleBarButton>
+        <org.goclib.android.ui.GoclTitleBarButton
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:id="@+id/goclib_title_bar_center"
+            android:layout_centerInParent="true"
+            ></org.goclib.android.ui.GoclTitleBarButton>
+        <org.goclib.android.ui.GoclTitleBarButton
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:id="@+id/goclib_title_bar_right"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            ></org.goclib.android.ui.GoclTitleBarButton>
+		<!-- <org.goclib.android.ui.TitleBarButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            ></org.goclib.android.ui.TitleBarButton>
+		<org.goclib.android.ui.TitleBarButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            
+            ></org.goclib.android.ui.TitleBarButton> -->
+    </RelativeLayout>
+</merge>
